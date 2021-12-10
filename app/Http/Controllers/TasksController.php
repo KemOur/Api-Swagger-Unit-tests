@@ -11,12 +11,11 @@ class TasksController extends Controller
 
     public function tasksByUser(Request $request)
     {
-        $tasks = Tasks::where('user_id', );
+        $tasks = Tasks::where('user_id',$request->user()->id )->orderBy('updated_at', 'desc')->get();
 
+        //dd($tasks);
         return response()->json([
-            "title" => $tasks->title,
-            "body" => $tasks->body,
-            //"tasks"=>$tasks
+            "tasks"=>$tasks
 
         ], 200);
     }
@@ -40,13 +39,14 @@ class TasksController extends Controller
     public function store(Request $request)
     {
         //
-        $newPost = new Tasks;
-        $newPost->user_id = 1;
-        $newPost->title = $request->title;
-        $newPost->body = $request->body;
-        $newPost->save();
+        $newTask = new Tasks;
+        $newTask->user_id = $request->user()->id;
+        $newTask->body = $request->body;
+        $newTask->save();
 
-        return $newPost;
+        return response()->json([
+            $newTask
+        ], 201);
     }
 
     /**
@@ -57,17 +57,17 @@ class TasksController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $post = Tasks::find($id);
+        $task = Tasks::find($id);
 
-        if (!$post) {
+        if (!$task) {
             return response()->json(['message' => "Not Found"], 404);
         }
 
-        if ($post->user_id != $request->user()->id) {
+        if ($task->user_id != $request->user()->id) {
             return response()->json(["message" => "Forbidden"], 403);
         }
 
-        return response()->json($post);
+        return response()->json($task);
     }
 
     /**
@@ -88,9 +88,34 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+
     public function update(Request $request, $id)
     {
         //
+
+        $task = Tasks::find($id);
+        if (!$task) {
+            return response()->json([
+                "message" => "Cette tâche nhexiste pas"
+            ], 404);
+        }
+        if ($request->user()->id != $task->user_id) {
+            return response()->json([
+                "message" => "Vous ne pouvez pas acceder à ce page!"
+            ], 403);
+        }
+        $request->validate([
+            'body' => 'required'
+        ]);
+        Tasks::where('id', $id)->update([
+            'body' => $request->body
+        ]);
+        return response()->json([
+            "success" => true
+        ], 200);
+
+        return response()->json(['message' => 'La tâche à été modifiée avec succés', 'task' => $task], 200);
     }
 
     /**
@@ -99,8 +124,47 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         //
+        $task = Tasks::find($id);
+        if (!$task) {
+            return response()->json([
+                "message" => "Tache innexistante"
+            ], 404);
+        }
+        if ($request->user()->id != $task->user_id) {
+            return response()->json([
+                "message" => "Accès interdit!"
+            ], 403);
+        }
+        Tasks::where('id', $id)->delete();
+        return response()->json([
+            "success" => true
+        ], 200);
     }
+
+    /*
+    public function completeTask(Request $request, $id)
+    {
+
+        $task = Tasks::find($id);
+        if (!$task) {
+            return response()->json([
+                "message" => "Cette tache n existe pas !"
+            ], 404);
+        }
+        if ($request->user()->id != $task->user_id) {
+            return response()->json([
+                "message" => "Accès interdit!"
+            ], 403);
+        }
+        Tasks::where('id', $id)->update([
+            'completed' => true
+        ]);
+        return response()->json([
+            "success" => true
+        ], 200);
+}
+*/
 }

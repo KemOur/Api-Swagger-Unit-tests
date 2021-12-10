@@ -27,9 +27,16 @@ Route::middleware('auth:sanctum')->post('auth/me', [ApiController::class, 'me'])
 Route::middleware('auth:sanctum')->post('auth/logout', [ApiController::class, 'logout']);
 
 //task
-Route::get('auth/tasks', [TasksController::class, 'tasksByUser']);
-Route::prefix('/auth')->group(function () {
+Route::middleware('auth:sanctum')->group( function () {
+
     Route::post('/store', [TasksController::class, 'store']);
-    Route::put('/{id}', [ApiController::class, 'update']);
-    Route::delete('/{id}', [ApiController::class, 'destroy']);
+    Route::get('tasks', [TasksController::class, 'tasksByUser']);
+    Route::delete('delete/{id}', [TasksController::class, 'destroy']);
+
+    Route::put('update/{id}', [TasksController::class, 'update']);
+    Route::get('complete/{id}', [TasksController::class, 'complete']);
+
+
+    //Route::put('/{id}', [ApiController::class, 'update']);
+
 });
