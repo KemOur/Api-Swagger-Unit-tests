@@ -2,17 +2,9 @@
 
 namespace App\Http\Controllers;
 
-//use App\Http\Requests\ContactRequest;
-//use App\Mail\ContactMe;
-//use App\Models\Actu;
-//use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Http\Request;
-//use Illuminate\Support\Facades\Config;
-//use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-//use Illuminate\Support\Facades\Mail;
-//use Illuminate\Validation\ValidationException;
 
 
 class ApiController extends Controller
@@ -23,10 +15,10 @@ class ApiController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
-            'device_name' => 'required',
+            'device_name' => "required"
         ]);
-
         $user = User::where('email', $request->email)->first();
+
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             // throw ValidationException::withMessages([
@@ -44,7 +36,8 @@ class ApiController extends Controller
         return response()->json([
             "token" => $token,
             "name" => $user->name,
-            "email" => $user->email
+            "email" => $user->email,
+            'created_at'=> $user->created_at
         ], 200);
     }
 
@@ -59,7 +52,8 @@ class ApiController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required'
+            'password' => 'required',
+            'device_name'=> 'required'
         ]);
 
         $exists = User::where('email', $request->email)->exists();
@@ -70,7 +64,7 @@ class ApiController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($request->password)
         ]);
 
 
@@ -81,7 +75,7 @@ class ApiController extends Controller
             "name" => $user->name,
             "email" => $user->email,
             "created_at" => $user->created_at
-        ], 200);
+        ]);
     }
 
     public function me(Request $request)
@@ -89,7 +83,7 @@ class ApiController extends Controller
         return response()->json([
             "name" => $request->user()->name,
             "email" => $request->user()->email,
-            "created_at" => $request->user()->created_at,
+            "created_at" => $request->user()->created_at
         ], 200);
         }
 
@@ -100,37 +94,4 @@ class ApiController extends Controller
         return response()->json(null, 204);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

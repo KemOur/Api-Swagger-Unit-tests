@@ -20,23 +20,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
+//Auth
 Route::post('register', [ApiController::class, 'register']);
 Route::post('login', [ApiController::class, 'login']);
-Route::middleware('auth:sanctum')->post('auth/me', [ApiController::class, 'me']);
-Route::middleware('auth:sanctum')->post('auth/logout', [ApiController::class, 'logout']);
+Route::middleware('auth:sanctum')->post('me', [ApiController::class, 'me']);
+Route::middleware('auth:sanctum')->post('logout', [ApiController::class, 'logout']);
 
 //task
 Route::middleware('auth:sanctum')->group( function () {
-
     Route::post('/store', [TasksController::class, 'store']);
     Route::get('tasks', [TasksController::class, 'tasksByUser']);
     Route::delete('delete/{id}', [TasksController::class, 'destroy']);
-
     Route::put('update/{id}', [TasksController::class, 'update']);
     Route::get('complete/{id}', [TasksController::class, 'complete']);
-
-
-    //Route::put('/{id}', [ApiController::class, 'update']);
-
 });

@@ -21,16 +21,6 @@ class TasksController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -68,17 +58,6 @@ class TasksController extends Controller
         }
 
         return response()->json($task);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**
@@ -143,28 +122,4 @@ class TasksController extends Controller
             "success" => true
         ], 200);
     }
-
-    /*
-    public function completeTask(Request $request, $id)
-    {
-
-        $task = Tasks::find($id);
-        if (!$task) {
-            return response()->json([
-                "message" => "Cette tache n existe pas !"
-            ], 404);
-        }
-        if ($request->user()->id != $task->user_id) {
-            return response()->json([
-                "message" => "Accès interdit!"
-            ], 403);
-        }
-        Tasks::where('id', $id)->update([
-            'completed' => true
-        ]);
-        return response()->json([
-            "success" => true
-        ], 200);
-}
-*/
 }
